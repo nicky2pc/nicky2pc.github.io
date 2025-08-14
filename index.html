@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ru" data-color-mode="auto" data-light-theme="light" data-dark-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nick Y — Резюме</title>
+  <meta name="description" content="Резюме Nick Y: Full‑Stack / Backend Developer. Node.js, Python, PostgreSQL, Redis, Docker, React, Next.js, ML (CatBoost/XGBoost).">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" type="image/png" href="logo.png" data-react-helmet="true">
+  <style>
+    :root {
+      --fg: #24292e;          /* GitHub text */
+      --muted: #6a737d;       /* GitHub muted text */
+      --bg: #ffffff;          /* GitHub background */
+      --canvas: #f6f8fa;      /* GitHub canvas */
+      --border: #e1e4e8;      /* GitHub border */
+      --accent: #0366d6;      /* GitHub links */
+      --success: #28a745;
+      --danger: #d73a49;
+      --shadow: 0 1px 3px rgba(27,31,36,0.12);
+      --shadow-hover: 0 2px 6px rgba(27,31,36,0.15);
+      --radius: 4px;          /* GitHub radius */
+      --radius-lg: 6px;
+      --code-bg: #f6f8fa;
+      --transition: all 0.2s ease;
+    }
+    [data-color-mode="dark"] {
+      --fg: #c9d1d9;
+      --muted: #8b949e;
+      --bg: #0d1117;
+      --canvas: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --code-bg: #161b22;
+      --shadow: 0 1px 3px rgba(27,31,36,0.2);
+      --shadow-hover: 0 2px 6px rgba(27,31,36,0.25);
+    }
+
+    /* Reset & base styles */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font: 14px/1.5 "GitHub Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      color: var(--fg);
+      background: var(--bg);
+      transition: var(--transition);
+    }
+    h1, h2, h3, h4 { margin: 0; font-weight: 600; }
+    a { color: var(--accent); text-decoration: none; transition: var(--transition); }
+    a:hover { text-decoration: none; }
+    ul { padding-left: 16px; list-style: none; }
+    .muted { color: var(--muted); }
+    .push { margin-left: auto; }
+    .nowrap { white-space: nowrap; }
+    code {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 1px 5px;
+      border-radius: var(--radius);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, Liberation Mono, monospace;
+      font-size: 12px;
+    }
+    .icon { 
+      display: inline-block; 
+      width: 16px; 
+      height: 16px; 
+      text-align: center; 
+      vertical-align: middle; 
+      color: var(--fg); /* Черно-белый стиль GitHub */
+    }
+    .icon:not(.theme-btn .icon) { margin-right: 6px; } /* Отступ для всех иконок, кроме тоггла темы */
+
+    /* Custom list bullets */
+    ul li { position: relative; padding-left: 20px; }
+    ul li::before {
+      content: '\f111'; /* FontAwesome circle */
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      font-size: 8px;
+      color: var(--muted);
+      position: absolute;
+      left: 0;
+      top: 6px;
+    }
+
+    /* Header */
+    .site-header {
+      position: sticky; top: 0; z-index: 32;
+      background: color-mix(in oklab, var(--bg) 90%, transparent);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+      transition: var(--transition);
+    }
+    .nav {
+      max-width: 1280px; margin: 0 auto; padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--fg);
+      font-weight: 600; font-size: 16px;
+    }
+    .brand .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--canvas); border: 1px solid var(--border);
+      background-size: cover; background-position: center;
+      background-image: url('me.jpg');
+    }
+    .nav-links { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+    .nav-link {
+      color: var(--fg);
+      padding: 4px 8px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+    }
+    .nav-link:hover {
+      background: color-mix(in oklab, var(--bg) 95%, var(--accent) 5%);
+      color: var(--accent);
+    }
+    .nav-link.active {
+      font-weight: 600;
+      border-bottom: 2px solid var(--accent);
+      background: none;
+    }
+    .nav-link i { margin-right: 4px; }
+
+    /* Theme/Lang switcher */
+    .theme-switcher {
+      display: flex; gap: 4px; margin-left: auto; align-items: center;
+    }
+    .theme-btn, .lang-btn {
+      width: 32px; height: 32px;
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--fg); font-size: 12px; font-weight: 500;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .theme-btn:hover, .lang-btn:hover {
+      background: var(--canvas);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .lang-btn { width: auto; padding: 0 8px; }
+    .theme-btn i { font-size: 16px; }
+
+    /* Layout */
+    .container { max-width: 1280px; margin: 16px auto; padding: 0 16px 48px; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 768px) {
+      .grid { grid-template-columns: 2fr 1fr; }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    .card:hover { box-shadow: var(--shadow-hover); }
+    .card .hd {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 16px;
+      background: var(--canvas);
+    }
+    .card .bd { padding: 16px; }
+
+    /* Badges & lists */
+    .badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .badge {
+      border: 1px solid var(--border);
+      background: var(--canvas);
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: var(--transition);
+      line-height: 1.5;
+    }
+    .badge:hover {
+      background: color-mix(in oklab, var(--canvas) 90%, var(--accent) 10%);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Project list */
+    .project {
+      display: grid; grid-template-columns: 1fr; gap: 12px;
+      padding: 12px; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); background: var(--canvas);
+      transition: var(--transition);
+    }
+    .project:hover { border-color: var(--accent); }
+    .project h3 { margin: 0 0 4px; font-size: 16px; display: flex; align-items: center; }
+    .project .meta { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .project .meta i { width: 12px; text-align: center; }
+    .project .thumb {
+      aspect-ratio: 16/9; border: 1px solid var(--border);
+      border-radius: var(--radius); display: grid; place-items: center;
+      font-size: 12px; color: var(--muted); overflow: hidden;
+    }
+
+    .project1 {
+        background: url("wishica.png") no-repeat center/cover;
+    }
+
+    .project2 {
+        background: url("ast.jpg") no-repeat center/cover;
+    }
+
+    .project3 {
+        background: url("flabs.png") no-repeat center/cover;
+    }
+
+    .project .actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 40px;
+      margin: 0;
+      list-style: none;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+    .timeline li {
+      position: relative;
+      margin-bottom: 24px;
+      padding-left: 16px;
+    }
+    .timeline li::before {
+      content: '\f058'; /* FontAwesome check-circle */
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      font-size: 16px;
+      color: var(--success); /* Зеленые галочки */
+      position: absolute;
+      left: -26px;
+      top: 0;
+    }
+    .timeline li:last-child { margin-bottom: 0; }
+    .timeline li .year {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--fg);
+      display: block;
+    }
+    .timeline li .desc {
+      font-size: 14px;
+      color: var(--fg);
+      margin: 4px 0 0;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);
+      font-size: 12px; color: var(--muted); display: flex;
+      justify-content: space-between; flex-wrap: wrap; gap: 12px; align-items: center;
+    }
+
+    /* Utils */
+    .row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; align-items: top; }
+    .row:last-child { margin-bottom: 0; }
+    .section { margin-bottom: 16px; }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .nav { flex-direction: column; align-items: flex-start; }
+      .nav-links { width: 100%; margin-top: 8px; justify-content: flex-start; }
+      .theme-switcher { margin-left: 0; margin-top: 8px; }
+      .brand { width: 100%; }
+      .grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .card .bd { padding: 12px; }
+      .project { padding: 8px; }
+      .timeline { padding-left: 32px; }
+      .timeline::before { left: 16px; }
+      .timeline li::before { left: -23px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="nav">
+      <a class="brand" href="#top" aria-label="home">
+        <span class="avatar"></span>
+        <strong>Nick Y</strong>
+      </a>
+      <div class="nav-links">
+        <a href="#about" class="nav-link active">Обо мне</a>
+        <a href="#skills" class="nav-link">Навыки</a>
+        <a href="#projects" class="nav-link">Проекты</a>
+        <a href="#experience" class="nav-link">Опыт</a>
+        <a href="#contacts" class="nav-link">Контакты</a>
+        <a href="https://github.com/nicky2pc" target="_blank" rel="noopener" class="nav-link">
+          <i class="fab fa-github icon"></i> GitHub
+        </a>
+      </div>
+      <div class="theme-switcher">
+        <div class="theme-btn" id="themeToggle">
+          <i class="fas fa-moon icon"></i>
+        </div>
+        <div class="lang-btn" id="langToggle">RU</div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container" id="top">
+    <div class="grid">
+      <!-- LEFT COLUMN -->
+      <section class="card" id="about">
+        <div class="hd">Обо мне</div>
+        <div class="bd">
+          <h1 style="margin-top:0; font-size: 20px;">Full‑Stack / Backend Developer</h1>
+          <p class="muted">
+            <i class="fas fa-map-marker-alt icon"></i> <span class="city">Екатеринбург / Москва</span> · 
+            <i class="fas fa-user icon"></i> <span class="age">20 лет</span> · 
+            <i class="fas fa-language icon"></i> <span class="language">Английский B2</span>
+          </p>
+          <p>
+            Коммерческий и проектный опыт - 3 года. Проектирую и разрабатываю веб‑сервисы и
+            лоу-латенси бэкенды: Node.js (Express/Fastify), Python (FastAPI/Django/Flask), PostgreSQL/Redis,
+            Docker, Linux. Интегрирую ML‑модули (CatBoost/XGBoost, базовое NLP), на фронте работаю с React/Next.js.
+          </p>
+          <div class="badges" aria-label="Ключевые компетенции">
+            <span class="badge">Node.js</span>
+            <span class="badge">Express</span>
+            <span class="badge">Fastify</span>
+            <span class="badge">Python</span>
+            <span class="badge">FastAPI</span>
+            <span class="badge">Django</span>
+            <span class="badge">Flask</span>
+            <span class="badge">PostgreSQL</span>
+            <span class="badge">Redis</span>
+            <span class="badge">Docker</span>
+            <span class="badge">Linux</span>
+            <span class="badge">React</span>
+            <span class="badge">Next.js</span>
+            <span class="badge">Async IO</span>
+            <span class="badge">WebSocket</span>
+            <span class="badge">Telegram API</span>
+            <span class="badge">ML / CatBoost</span>
+            <span class="badge">NLP</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN -->
+      <aside class="card" id="contacts">
+        <div class="hd">Контакты</div>
+        <div class="bd">
+          <ul style="list-style:none; padding-left:0; margin:0;">
+            <li class="row">
+              <i class="fab fa-telegram icon"></i>
+              <strong class="contact-label">Telegram:</strong> <a href="https://t.me/nicky2pc" target="_blank" rel="noopener">@nicky2pc</a>
+            </li>
+            <li class="row">
+              <i class="fas fa-envelope icon"></i>
+              <strong class="contact-label">Email:</strong> <a href="mailto:nikolajudin023@gmail.com">nikolajudin023@gmail.com</a>
+            </li>
+            <li class="row">
+              <i class="fab fa-github icon"></i>
+              <strong class="contact-label">GitHub:</strong> <a href="https://github.com/nicky2pc" target="_blank" rel="noopener">github.com/nicky2pc</a>
+            </li>
+            <li class="row">
+              <i class="fas fa-map-marker-alt icon"></i>
+              <strong class="contact-label">Город:</strong> <span class="city">Екатеринбург / Москва</span>
+            </li>
+          </ul>
+          <hr style="border:0; border-top:1px solid var(--border); margin:12px 0;" />
+          <p class="muted">
+            <i class="fas fa-file-pdf icon"></i>
+            <span class="pdf-note">PDF-версию можно сохранить через</span> <span class="nowrap"><code>⌘/Ctrl+P → Save as PDF</code></span>.
+          </p>
+        </div>
+      </aside>
+    </div>
+
+    <!-- SKILLS CARD -->
+    <section class="card" id="skills" style="margin-top:16px;">
+      <div class="hd">Технологии</div>
+      <div class="bd">
+        <div class="row">
+          <div class="section" style="min-width:260px; flex:1;">
+            <h3 style="margin:0 0 8px; display: flex; align-items: center;">
+              <i class="fas fa-server icon"></i> <span class="section-title">Backend</span>
+            </h3>
+            <div class="badges">
+              <span class="badge">Node.js</span>
+              <span class="badge">Express</span>
+              <span class="badge">Fastify</span>
+              <span class="badge">Python</span>
+              <span class="badge">Django</span>
+              <span class="badge">Flask</span>
+              <span class="badge">FastAPI</span>
+              <span class="badge">aiohttp</span>
+              <span class="badge">pytest</span>
+              <span class="badge">pydantic</span>
+              <span class="badge">REST</span>
+              <span class="badge">GraphQL</span>
+            </div>
+          </div>
+          <div class="section" style="min-width:260px; flex:1;">
+            <h3 style="margin:0 0 8px; display: flex; align-items: center;">
+              <i class="fas fa-database icon"></i> <span class="section-title">Data/ML</span>
+            </h3>
+            <div class="badges">
+              <span class="badge">SQL</span>
+              <span class="badge">PostgreSQL</span>
+              <span class="badge">MySQL</span>
+              <span class="badge">MongoDB</span>
+              <span class="badge">Redis</span>
+              <span class="badge">Memcached</span>
+              <span class="badge">pandas</span>
+              <span class="badge">numpy</span>
+              <span class="badge">matplotlib</span>
+              <span class="badge">scipy</span>
+              <span class="badge">seaborn</span>
+              <span class="badge">CatBoost</span>
+              <span class="badge">XGBoost</span>
+              <span class="badge">Регрессоры</span>
+              <span class="badge">Классификаторы</span>
+              <span class="badge">F1 Score</span>
+              <span class="badge">ROC AUC</span>
+              <span class="badge">GANs</span>
+              <span class="badge">Transformers</span>
+              <span class="badge">NLP</span>
+            </div>
+          </div>
+          <div class="section" style="min-width:260px; flex:1;">
+            <h3 style="margin:0 0 8px; display: flex; align-items: center;">
+              <i class="fas fa-cloud icon"></i> <span class="section-title">Инфраструктура</span>
+            </h3>
+            <div class="badges">
+              <span class="badge">Docker</span>
+              <span class="badge">Linux</span>
+              <span class="badge">Bash</span>
+              <span class="badge">GitHub Actions</span>
+              <span class="badge">Nginx</span>
+              <span class="badge">CI/CD</span>
+            </div>
+          </div>
+          <div class="section" style="min-width:260px; flex:1;">
+            <h3 style="margin:0 0 8px; display: flex; align-items: center;">
+              <i class="fas fa-code icon"></i> <span class="section-title">Frontend</span>
+            </h3>
+            <div class="badges">
+              <span class="badge">React</span>
+              <span class="badge">Next.js</span>
+              <span class="badge">TypeScript</span>
+              <span class="badge">npm</span>
+              <span class="badge">yarn</span>
+              <span class="badge">eslint</span>
+              <span class="badge">webpack</span>
+              <span class="badge">SSR</span>
+              <span class="badge">Electron</span>
+              <span class="badge">Node.js</span>
+              <span class="badge">Vite</span>
+              <span class="badge">Styled Components</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="card" id="projects" style="margin-top:16px;">
+      <div class="hd">Проекты</div>
+      <div class="bd" style="display:grid; gap:16px;">
+        <!-- Project 1 -->
+        <article class="project">
+          <div>
+            <h3><i class="fas fa-wand-magic-sparkles icon"></i> wishica.ru — AI‑поздравления</h3>
+            <p class="meta">
+              <i class="fas fa-layer-group icon"></i> <span class="stack-label">Стек:</span> React, Express, OpenRouter API
+            </p>
+            <p class="project-desc">Веб‑сервис генерации поздравлений с использованием LLM‑интеграции. UI в стиле веб‑приложения с быстрым рендером и красивым UI.</p>
+            <div class="actions">
+              <a class="badge" href="https://wishica.ru/" target="_blank" rel="noopener">
+                <i class="fas fa-external-link-alt icon"></i> <span class="link-label">Сайт</span>
+              </a>
+            </div>
+          </div>
+          <div class="thumb project1">
+          </div>
+        </article>
+
+        <!-- Project 2 -->
+        <article class="project">
+          <div>
+            <h3><i class="fas fa-chart-line icon"></i> AST Platform (ветка: <code>nick0</code>)</h3>
+            <p class="meta">
+              <i class="fas fa-layer-group icon"></i> <span class="stack-label">Стек:</span> Node.js, PostgreSQL · <span class="role-label">роль:</span> backend
+            </p>
+            <p class="project-desc">Алгоритмическая платформа (ML) снайпинга токенов. Авторизация, REST API, интеграции, хранение и выборка данных по токенам, pnl, стате.</p>
+            <div class="actions">
+              <a class="badge" href="https://github.com/SK0LX/AST/tree/nick0" target="_blank" rel="noopener">
+                <i class="fab fa-github icon"></i> <span class="link-label">Репозиторий</span>
+              </a>
+            </div>
+          </div>
+          <div class="thumb project2">
+            
+          </div>
+        </article>
+
+        <!-- Project 3 -->
+        <article class="project">
+          <div>
+            <h3><i class="fas fa-robot icon"></i> Finesse Labs</h3>
+            <p class="meta">
+              <i class="fas fa-layer-group icon"></i> <span class="stack-label">Стек:</span> Nest.js, Next.js SSR, PostgreSQL
+            </p>
+            <p class="project-desc">Платформа для запуска и управления нодами в несколько кликов без навыков программирования. Более 3 лет исследований и настройки нод, привлечено около $500K от проектов tier 1-2 для работы нод на разных тестнетах.</p>
+            <div class="actions">
+              <a class="badge" href="https://finesselabs.xyz/" target="_blank" rel="noopener">
+                <i class="fas fa-external-link-alt icon"></i> <span class="link-label">Сайт</span>
+              </a>
+            </div>
+          </div>
+          <div class="thumb project3">
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE TIMELINE -->
+    <section class="card" id="experience" style="margin-top:16px;">
+      <div class="hd">Опыт работы</div>
+      <div class="bd">
+        <ul class="timeline">
+          <li>
+            <span class="year">2021-2022</span>
+            <p class="desc">Сборка серверного оборудования</p>
+          </li>
+          <li>
+            <span class="year">2022-2023</span>
+            <p class="desc">Blockchain Node Runner</p>
+          </li>
+          <li>
+            <span class="year">2023-2024</span>
+            <p class="desc">Backend в разных проектах</p>
+          </li>
+          <li>
+            <span class="year">2024-настоящее</span>
+            <p class="desc">Finesse Labs</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section class="card" id="summary" style="margin-top:16px;">
+      <div class="hd">Завершение</div>
+      <div class="bd">
+        <p class="summary-content">Спасибо за внимание к моему резюме! Я открыт к новым проектам и готов внести свой вклад. Свяжитесь со мной для обсуждения деталей</p>
+      </div>
+    </section>
+
+    <!-- ADDITIONAL CONTACTS -->
+    <section class="card" id="contacts-bottom" style="margin-top:16px;">
+      <div class="hd">Связаться со мной</div>
+      <div class="bd">
+        <ul style="list-style:none; padding-left:0; margin:0;">
+          <li class="row">
+            <i class="fab fa-telegram icon"></i>
+            <strong class="contact-label">Telegram:</strong> <a href="https://t.me/nicky2pc" target="_blank" rel="noopener">@nicky2pc</a>
+          </li>
+          <li class="row">
+            <i class="fas fa-envelope icon"></i>
+            <strong class="contact-label">Email:</strong> <a href="mailto:nikolajudin023@gmail.com">nikolajudin023@gmail.com</a>
+          </li>
+          <li class="row">
+            <i class="fab fa-github icon"></i>
+            <strong class="contact-label">GitHub:</strong> <a href="https://github.com/nicky2pc" target="_blank" rel="noopener">github.com/nicky2pc</a>
+          </li>
+          <li class="row">
+            <i class="fas fa-map-marker-alt icon"></i>
+            <strong class="contact-label">Город:</strong> <span class="city">Екатеринбург / Москва</span>
+          </li>
+        </ul>
+        <hr style="border:0; border-top:1px solid var(--border); margin:12px 0;" />
+        <p class="muted">
+          <i class="fas fa-file-pdf icon"></i>
+          <span class="pdf-note">PDF-версию можно сохранить через</span> <span class="nowrap"><code>⌘/Ctrl+P → Save as PDF</code></span>.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <span class="footer-copyright">© <span id="year"></span> Nick Y</span>
+      <span class="push"><span class="footer-update">Последнее обновление:</span> <time id="updated"></time></span>
+    </footer>
+  </main>
+
+  <script>
+    // Год и дата билда
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById('updated').textContent = new Date().toLocaleDateString('ru-RU');
+
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+
+    // Проверка сохранённой темы
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme) {
+      html.setAttribute('data-color-mode', savedTheme);
+      themeToggle.innerHTML = savedTheme === 'dark' ? '<i class="fas fa-sun icon"></i>' : '<i class="fas fa-moon icon"></i>';
+    } else {
+      html.setAttribute('data-color-mode', prefersDark ? 'dark' : 'light');
+      themeToggle.innerHTML = prefersDark ? '<i class="fas fa-sun icon"></i>' : '<i class="fas fa-moon icon"></i>';
+    }
+
+    // Обработчик переключения темы
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-color-mode');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-color-mode', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeToggle.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun icon"></i>' : '<i class="fas fa-moon icon"></i>';
+    });
+
+    // Language toggle
+    const langToggle = document.getElementById('langToggle');
+    const translations = {
+      ru: {
+        "about": "Обо мне",
+        "skills": "Навыки",
+        "projects": "Проекты",
+        "experience": "Опыт",
+        "contacts": "Контакты",
+        "title": "Nick Y — Резюме",
+        "role": "Full‑Stack / Backend Developer",
+        "aboutContent": "Коммерческий и проектный опыт - 3 года. Проектирую и разрабатываю веб‑сервисы и лоу-латенси бэкенды: Node.js (Express/Fastify), Python (FastAPI/Django/Flask), PostgreSQL/Redis, Docker, Linux. Интегрирую ML‑модули (CatBoost/XGBoost, базовое NLP), на фронте работаю с React/Next.js.",
+        "contactsTitle": "Контакты",
+        "skillsTitle": "Технологии",
+        "projectsTitle": "Проекты",
+        "experienceTitle": "Опыт работы",
+        "summaryTitle": "Завершение",
+        "summaryContent": "Спасибо за внимание к моему резюме! Я открыт к новым проектам и готов внести свой вклад. Свяжитесь со мной для обсуждения деталей",
+        "contactsBottomTitle": "Связаться со мной",
+        "pdfNote": "PDF-версию можно сохранить через",
+        "backend": "Backend",
+        "data": "Data/ML",
+        "infra": "Инфраструктура",
+        "frontend": "Frontend",
+        "regressors": "Регрессоры",
+        "classifiers": "Классификаторы",
+        "city": "Екатеринбург / Москва",
+        "cityLabel": "Город:",
+        "telegramLabel": "Telegram:",
+        "emailLabel": "Email:",
+        "githubLabel": "GitHub:",
+        "age": "20 лет",
+        "language": "Английский B2",
+        "stackLabel": "Стек:",
+        "roleLabel": "роль:",
+        "siteLink": "Сайт",
+        "codeLink": "Код",
+        "repoLink": "Репозиторий",
+        "projectDesc1": "Веб‑сервис генерации поздравлений с использованием LLM‑интеграции. UI в стиле веб‑приложения с быстрым рендером и красивым UI.",
+        "projectDesc2": "Алгоритмическая платформа (ML) снайпинга токенов. Авторизация, REST API, интеграции, хранение и выборка данных по токенам, pnl, стате.",
+        "projectDesc3": "Платформа для запуска и управления нодами в несколько кликов без навыков программирования. Более 3 лет исследований и настройки нод, привлечено около $500K от проектов tier 1-2 для работы нод на разных тестнетах.",
+        "exp1": "Сборка серверного оборудования",
+        "exp2": "Blockchain Node Runner",
+        "exp3": "Backend в разных проектах",
+        "exp4": "Finesse Labs",
+        "expYear4": "2024-настоящее",
+        "footerCopyright": "©",
+        "footerUpdate": "Последнее обновление:"
+      },
+      en: {
+        "about": "About",
+        "skills": "Skills",
+        "projects": "Projects",
+        "experience": "Experience",
+        "contacts": "Contacts",
+        "title": "Nick Y — Resume",
+        "role": "Full‑Stack / Backend Developer",
+        "aboutContent": "3 years of commercial and project experience. Designing and developing web services and low-latency backends: Node.js (Express/Fastify), Python (FastAPI/Django/Flask), PostgreSQL/Redis, Docker, Linux. Integrating ML modules (CatBoost/XGBoost, NLP), working with React/Next.js on the frontend.",
+        "contactsTitle": "Contacts",
+        "skillsTitle": "Skills",
+        "projectsTitle": "Projects",
+        "experienceTitle": "Work Experience",
+        "summaryTitle": "Summary",
+        "summaryContent": "Thank you for reviewing my resume! I am open to new opportunities and ready to contribute to your projects. Feel free to contact me for further discussion.",
+        "contactsBottomTitle": "Get in Touch",
+        "pdfNote": "PDF version can be saved via",
+        "backend": "Backend",
+        "data": "Data/ML",
+        "infra": "Infrastructure",
+        "frontend": "Frontend",
+        "regressors": "Regressors",
+        "classifiers": "Classifiers",
+        "city": "Yekaterinburg / Moscow",
+        "cityLabel": "City:",
+        "telegramLabel": "Telegram:",
+        "emailLabel": "Email:",
+        "githubLabel": "GitHub:",
+        "age": "20 years",
+        "language": "English B2",
+        "stackLabel": "Stack:",
+        "roleLabel": "role:",
+        "siteLink": "Website",
+        "codeLink": "Code",
+        "repoLink": "Repository",
+        "projectDesc1": "Web service for generating greetings using LLM integration. Web-app style UI with fast rendering and SSR when needed.",
+        "projectDesc2": "Server-side components for an algorithmic platform. Authentication, REST API, integrations, data storage, and retrieval.",
+        "projectDesc3": "Platform for launching and managing nodes in a few clicks without coding skills. Over 3 years of research and node setup, raised ~$500K from tier 1-2 projects for running nodes on various testnets.",
+        "exp1": "Server hardware assembly",
+        "exp2": "Blockchain Node Runner",
+        "exp3": "Backend in various projects",
+        "exp4": "Finesse Labs",
+        "expYear4": "2024-present",
+        "footerCopyright": "©",
+        "footerUpdate": "Last updated:"
+      }
+    };
+
+    function setLanguage(lang) {
+      // Навигация
+      document.querySelector('[href="#about"]').textContent = translations[lang].about;
+      document.querySelector('[href="#skills"]').textContent = translations[lang].skills;
+      document.querySelector('[href="#projects"]').textContent = translations[lang].projects;
+      document.querySelector('[href="#experience"]').textContent = translations[lang].experience;
+      document.querySelector('[href="#contacts"]').textContent = translations[lang].contacts;
+      
+      // Заголовок страницы
+      document.title = translations[lang].title;
+
+      // Секция "Обо мне"
+      document.querySelector('#about .hd').textContent = translations[lang].about;
+      document.querySelector('#about h1').textContent = translations[lang].role;
+      document.querySelector('#about p:nth-of-type(2)').textContent = translations[lang].aboutContent;
+      document.querySelector('#about .city').textContent = translations[lang].city;
+      document.querySelector('#about .age').textContent = translations[lang].age;
+      document.querySelector('#about .language').textContent = translations[lang].language;
+
+      // Секция "Контакты" (боковая)
+      document.querySelector('#contacts .hd').textContent = translations[lang].contactsTitle;
+      document.querySelectorAll('#contacts .contact-label')[0].textContent = translations[lang].telegramLabel;
+      document.querySelectorAll('#contacts .contact-label')[1].textContent = translations[lang].emailLabel;
+      document.querySelectorAll('#contacts .contact-label')[2].textContent = translations[lang].githubLabel;
+      document.querySelectorAll('#contacts .contact-label')[3].textContent = translations[lang].cityLabel;
+      document.querySelectorAll('#contacts .city')[0].textContent = translations[lang].city;
+
+      // Секция "Технологии"
+      document.querySelector('#skills .hd').textContent = translations[lang].skillsTitle;
+      document.querySelectorAll('#skills .section-title')[0].textContent = translations[lang].backend;
+      document.querySelectorAll('#skills .section-title')[1].textContent = translations[lang].data;
+      document.querySelectorAll('#skills .section-title')[2].textContent = translations[lang].infra;
+      document.querySelectorAll('#skills .section-title')[3].textContent = translations[lang].frontend;
+      
+      // Перевод регрессоров и классификаторов в значках
+      const regressorsBadge = document.querySelector('#skills .badges span:nth-child(14)'); // Регрессоры
+      const classifiersBadge = document.querySelector('#skills .badges span:nth-child(15)'); // Классификаторы
+      if (regressorsBadge) regressorsBadge.textContent = translations[lang].regressors;
+      if (classifiersBadge) classifiersBadge.textContent = translations[lang].classifiers;
+
+      // Секция "Проекты"
+        document.querySelector('#projects .hd').textContent = translations[lang].projectsTitle;
+        document.querySelectorAll('.project .stack-label').forEach(label => {
+        label.textContent = translations[lang].stackLabel;
+        });
+        document.querySelectorAll('.project .role-label').forEach(label => {
+        label.textContent = translations[lang].roleLabel;
+        });
+        document.querySelectorAll('.project .project-desc')[0].textContent = translations[lang].projectDesc1;
+        document.querySelectorAll('.project .project-desc')[1].textContent = translations[lang].projectDesc2;
+        document.querySelectorAll('.project .project-desc')[2].textContent = translations[lang].projectDesc3;
+        document.querySelectorAll('.project .link-label')[0].textContent = translations[lang].siteLink; // wishica.ru
+        document.querySelectorAll('.project .link-label')[1].textContent = translations[lang].repoLink; // AST Platform
+        document.querySelectorAll('.project .link-label')[2].textContent = translations[lang].siteLink; // Finesse Labs
+
+      // Секция "Опыт работы"
+      document.querySelector('#experience .hd').textContent = translations[lang].experienceTitle;
+      document.querySelectorAll('.timeline .desc')[0].textContent = translations[lang].exp1;
+      document.querySelectorAll('.timeline .desc')[1].textContent = translations[lang].exp2;
+      document.querySelectorAll('.timeline .desc')[2].textContent = translations[lang].exp3;
+      document.querySelectorAll('.timeline .desc')[3].textContent = translations[lang].exp4;
+      document.querySelectorAll('.timeline .year')[3].textContent = translations[lang].expYear4;
+
+      // Секция "Завершение"
+      document.querySelector('#summary .hd').textContent = translations[lang].summaryTitle;
+      document.querySelector('#summary .summary-content').textContent = translations[lang].summaryContent;
+
+      // Секция "Связаться со мной"
+      document.querySelector('#contacts-bottom .hd').textContent = translations[lang].contactsBottomTitle;
+      document.querySelectorAll('#contacts-bottom .contact-label')[0].textContent = translations[lang].telegramLabel;
+      document.querySelectorAll('#contacts-bottom .contact-label')[1].textContent = translations[lang].emailLabel;
+      document.querySelectorAll('#contacts-bottom .contact-label')[2].textContent = translations[lang].githubLabel;
+      document.querySelectorAll('#contacts-bottom .contact-label')[3].textContent = translations[lang].cityLabel;
+      document.querySelectorAll('#contacts-bottom .city')[0].textContent = translations[lang].city;
+
+      // PDF примечание
+      document.querySelectorAll('.pdf-note').forEach(note => {
+        note.textContent = translations[lang].pdfNote;
+      });
+
+      // Футер
+      document.querySelector('.footer-copyright').innerHTML = `${translations[lang].footerCopyright} <span id="year">${new Date().getFullYear()}</span> Nick Y`;
+      document.querySelector('.footer-update').textContent = translations[lang].footerUpdate;
+
+      // Кнопка языка
+      langToggle.textContent = lang === 'ru' ? 'EN' : 'RU';
+      localStorage.setItem('language', lang);
+    }
+
+    const savedLang = localStorage.getItem('language') || 'ru';
+    setLanguage(savedLang);
+
+    langToggle.addEventListener('click', () => {
+      const currentLang = localStorage.getItem('language') || 'ru';
+      const newLang = currentLang === 'ru' ? 'en' : 'ru';
+      setLanguage(newLang);
+    });
+
+    // Подсветка активной навигации при скролле
+    const sections = document.querySelectorAll('section, aside');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= (sectionTop - 100)) {
+          current = section.getAttribute('id');
+        }
+      });
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href').substring(1) === current) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
