@@ -274,6 +274,35 @@
       justify-content: space-between; flex-wrap: wrap; gap: 12px; align-items: center;
     }
 
+    /* Модальное окно для увеличенного изображения */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7); /* Полупрозрачный фон */
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px); /* Эффект размытия фона */
+      transition: var(--transition);
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: var(--radius);
+      border: 1px solid var(--border); /* Обводка в стиле GitHub */
+      box-shadow: var(--shadow);
+      object-fit: contain;
+    }
+
     /* Utils */
     .row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; align-items: top; }
     .row:last-child { margin-bottom: 0; }
@@ -518,7 +547,6 @@
             </div>
           </div>
           <div class="thumb project2">
-            
           </div>
         </article>
 
@@ -610,6 +638,10 @@
       <span class="push"><span class="footer-update">Последнее обновление:</span> <time id="updated"></time></span>
     </footer>
   </main>
+
+  <div class="modal" id="imageModal">
+    <img id="modalImage" src="" alt="Увеличенное изображение">
+  </div>
 
   <script>
     // Год и дата билда
@@ -781,7 +813,7 @@
       // Секция "Проекты"
         document.querySelector('#projects .hd').textContent = translations[lang].projectsTitle;
         document.querySelectorAll('.project .stack-label').forEach(label => {
-        label.textContent = translations[lang].stackLabel;
+        label.textContent = translations[lang].StackLabel;
         });
         document.querySelectorAll('.project .role-label').forEach(label => {
         label.textContent = translations[lang].roleLabel;
@@ -854,6 +886,45 @@
           link.classList.add('active');
         }
       });
+    });
+
+    // Модальное окно для изображений
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const projectThumbs = document.querySelectorAll('.project .thumb');
+    const avatar = document.querySelector('.brand .avatar');
+
+    // Функция для открытия модального окна
+    function openModal(imageUrl) {
+      modalImage.src = imageUrl;
+      modal.classList.add('active');
+    }
+
+    // Обработка кликов по изображениям проектов
+    projectThumbs.forEach(thumb => {
+      thumb.style.cursor = 'pointer';
+      thumb.addEventListener('click', () => {
+        const bgImage = window.getComputedStyle(thumb).backgroundImage;
+        const imageUrl = bgImage.slice(5, -2); // Извлечение URL
+        openModal(imageUrl);
+      });
+    });
+
+    // Обработка клика по аватару
+    avatar.style.cursor = 'pointer';
+    avatar.addEventListener('click', (e) => {
+      e.preventDefault(); // Отменяем переход по ссылке в .brand
+      const bgImage = window.getComputedStyle(avatar).backgroundImage;
+      const imageUrl = bgImage.slice(5, -2); // Извлечение URL
+      openModal(imageUrl);
+    });
+
+    // Закрытие модального окна при клике на фон
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        modalImage.src = ''; // Очистка изображения
+      }
     });
   </script>
 </body>
