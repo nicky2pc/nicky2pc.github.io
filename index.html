@@ -221,6 +221,10 @@
         background: url("flabs.png") no-repeat center/cover;
     }
 
+    .project4 {
+        background: url("derivx.png") no-repeat center/cover;
+    }
+
     .project .actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
 
     /* Timeline */
@@ -567,6 +571,24 @@
           <div class="thumb project3">
           </div>
         </article>
+
+        <!-- Project 4 -->
+        <article class="project">
+          <div>
+            <h3><i class="fas fa-calculator icon"></i> DerivX — Quantitative Research Platform</h3>
+            <p class="meta">
+              <i class="fas fa-layer-group icon"></i> <span class="stack-label">Стек:</span> React, Next.js, Node.js, Python · <span class="role-label">роль:</span> Full-Stack
+            </p>
+            <p class="project-desc">Платформа для анализа и моделирования опционных стратегий. Позволяет задавать рыночные параметры, рассчитывать греки (Delta, Gamma, Theta, Vega, Rho), строить PNL-графики и экспортировать результаты в JSON/PNG. Поддерживает шаблоны стратегий (Straddle, Strangle, Butterfly, Iron Condor).</p>
+            <div class="actions">
+              <a class="badge" href="https://deriv-x.vercel.app/" target="_blank" rel="noopener">
+                <i class="fas fa-external-link-alt icon"></i> <span class="link-label">Сайт</span>
+              </a>
+            </div>
+          </div>
+          <div class="thumb project4">
+          </div>
+        </article>
       </div>
     </section>
 
@@ -588,8 +610,12 @@
             <p class="desc">Backend в разных проектах</p>
           </li>
           <li>
-            <span class="year">2024-настоящее</span>
+            <span class="year">2024-2025</span>
             <p class="desc">Finesse Labs</p>
+          </li>
+          <li>
+            <span class="year">2025-настоящее</span>
+            <p class="desc">DerivX</p>
           </li>
         </ul>
       </div>
@@ -714,11 +740,14 @@
         "projectDesc1": "Веб‑сервис генерации поздравлений с использованием LLM‑интеграции. UI в стиле веб‑приложения с быстрым рендером и красивым UI.",
         "projectDesc2": "Алгоритмическая платформа (ML) снайпинга токенов. Авторизация, REST API, интеграции, хранение и выборка данных по токенам, pnl, стате.",
         "projectDesc3": "Платформа для запуска и управления нодами в несколько кликов без навыков программирования. Более 3 лет исследований и настройки нод, привлечено около $500K от проектов tier 1-2 для работы нод на разных тестнетах.",
+        "projectDesc4": "Платформа для анализа и моделирования опционных стратегий. Позволяет задавать рыночные параметры, рассчитывать греки (Delta, Gamma, Theta, Vega, Rho), строить PNL-графики и экспортировать результаты в JSON/PNG. Поддерживает шаблоны стратегий (Straddle, Strangle, Butterfly, Iron Condor).",
         "exp1": "Сборка серверного оборудования",
         "exp2": "Blockchain Node Runner",
         "exp3": "Backend в разных проектах",
         "exp4": "Finesse Labs",
-        "expYear4": "2024-настоящее",
+        "expYear4": "2024-2025",
+        "exp5": "DerivX",
+        "expYear5": "2025-настоящее",
         "footerCopyright": "©",
         "footerUpdate": "Последнее обновление:"
       },
@@ -760,11 +789,14 @@
         "projectDesc1": "Web service for generating greetings using LLM integration. Web-app style UI with fast rendering and SSR when needed.",
         "projectDesc2": "Server-side components for an algorithmic platform. Authentication, REST API, integrations, data storage, and retrieval.",
         "projectDesc3": "Platform for launching and managing nodes in a few clicks without coding skills. Over 3 years of research and node setup, raised ~$500K from tier 1-2 projects for running nodes on various testnets.",
+        "projectDesc4": "Platform for analyzing and modeling options strategies. Allows setting market parameters, calculating Greeks (Delta, Gamma, Theta, Vega, Rho), building PNL charts, and exporting results in JSON/PNG. Supports strategy templates (Straddle, Strangle, Butterfly, Iron Condor).",
         "exp1": "Server hardware assembly",
         "exp2": "Blockchain Node Runner",
         "exp3": "Backend in various projects",
         "exp4": "Finesse Labs",
-        "expYear4": "2024-present",
+        "expYear4": "2024-2025",
+        "exp5": "DerivX",
+        "expYear5": "2025-present",
         "footerCopyright": "©",
         "footerUpdate": "Last updated:"
       }
@@ -811,19 +843,21 @@
       if (classifiersBadge) classifiersBadge.textContent = translations[lang].classifiers;
 
       // Секция "Проекты"
-        document.querySelector('#projects .hd').textContent = translations[lang].projectsTitle;
-        document.querySelectorAll('.project .stack-label').forEach(label => {
-        label.textContent = translations[lang].StackLabel;
-        });
-        document.querySelectorAll('.project .role-label').forEach(label => {
+      document.querySelector('#projects .hd').textContent = translations[lang].projectsTitle;
+      document.querySelectorAll('.project .stack-label').forEach(label => {
+        label.textContent = translations[lang].stackLabel;
+      });
+      document.querySelectorAll('.project .role-label').forEach(label => {
         label.textContent = translations[lang].roleLabel;
-        });
-        document.querySelectorAll('.project .project-desc')[0].textContent = translations[lang].projectDesc1;
-        document.querySelectorAll('.project .project-desc')[1].textContent = translations[lang].projectDesc2;
-        document.querySelectorAll('.project .project-desc')[2].textContent = translations[lang].projectDesc3;
-        document.querySelectorAll('.project .link-label')[0].textContent = translations[lang].siteLink; // wishica.ru
-        document.querySelectorAll('.project .link-label')[1].textContent = translations[lang].repoLink; // AST Platform
-        document.querySelectorAll('.project .link-label')[2].textContent = translations[lang].siteLink; // Finesse Labs
+      });
+      document.querySelectorAll('.project .project-desc')[0].textContent = translations[lang].projectDesc1;
+      document.querySelectorAll('.project .project-desc')[1].textContent = translations[lang].projectDesc2;
+      document.querySelectorAll('.project .project-desc')[2].textContent = translations[lang].projectDesc3;
+      document.querySelectorAll('.project .project-desc')[3].textContent = translations[lang].projectDesc4;
+      document.querySelectorAll('.project .link-label')[0].textContent = translations[lang].siteLink; // wishica.ru
+      document.querySelectorAll('.project .link-label')[1].textContent = translations[lang].repoLink; // AST Platform
+      document.querySelectorAll('.project .link-label')[2].textContent = translations[lang].siteLink; // Finesse Labs
+      document.querySelectorAll('.project .link-label')[3].textContent = translations[lang].siteLink; // DerivX
 
       // Секция "Опыт работы"
       document.querySelector('#experience .hd').textContent = translations[lang].experienceTitle;
@@ -831,7 +865,9 @@
       document.querySelectorAll('.timeline .desc')[1].textContent = translations[lang].exp2;
       document.querySelectorAll('.timeline .desc')[2].textContent = translations[lang].exp3;
       document.querySelectorAll('.timeline .desc')[3].textContent = translations[lang].exp4;
+      document.querySelectorAll('.timeline .desc')[4].textContent = translations[lang].exp5;
       document.querySelectorAll('.timeline .year')[3].textContent = translations[lang].expYear4;
+      document.querySelectorAll('.timeline .year')[4].textContent = translations[lang].expYear5;
 
       // Секция "Завершение"
       document.querySelector('#summary .hd').textContent = translations[lang].summaryTitle;
