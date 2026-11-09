@@ -25,14 +25,6 @@
     transition: color .2s, border-color .2s;
   }
   nav a:hover, nav a:focus-visible { color: #fff; border-bottom-color: rgba(255, 255, 255, .75); outline: none; }
-  .hint {
-    position: fixed; left: 0; right: 0; bottom: calc(max(26px, env(safe-area-inset-bottom)) + 44px);
-    margin: 0; text-align: center; z-index: 2; pointer-events: none;
-    font: 400 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .16em;
-    color: rgba(255, 255, 255, .5); text-shadow: 0 1px 10px rgba(0, 0, 0, .5); transition: opacity .8s;
-  }
-  .hint.used { opacity: 0; }
-  @media (hover: none) { .hint { display: none; } }
   .fallback {
     display: none; position: fixed; inset: 0; place-items: center; margin: 0;
     font: 900 clamp(84px, 24vw, 300px)/1 system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: .03em;
@@ -40,16 +32,15 @@
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
   .no-gl body { background: linear-gradient(180deg, #23486b 0%, #b9c9d2 50%, #0f3239 50.4%, #031015 100%); }
-  .no-gl canvas, .no-gl .hint { display: none; }
+  .no-gl canvas { display: none; }
   .no-gl .fallback { display: grid; }
 </style>
-<noscript><style>canvas, .hint { display: none; } .fallback { display: grid; } body { background: linear-gradient(180deg, #23486b 0%, #b9c9d2 50%, #0f3239 50.4%, #031015 100%); }</style></noscript>
+<noscript><style>canvas { display: none; } .fallback { display: grid; } body { background: linear-gradient(180deg, #23486b 0%, #b9c9d2 50%, #0f3239 50.4%, #031015 100%); }</style></noscript>
 </head>
 <body>
 <canvas id="c" aria-hidden="true"></canvas>
 <h1 class="sr-only">DVP</h1>
 <p class="fallback" aria-hidden="true">DVP</p>
-<p class="hint" id="hint">drag to rotate</p>
 <nav aria-label="Links">
   <a href="https://github.com/nicky2pc" target="_blank" rel="noopener">GitHub</a>
   <a href="https://t.me/nicky2pc" target="_blank" rel="noopener">Telegram</a>
@@ -325,7 +316,6 @@ void main() {
 (() => {
   const root = document.documentElement;
   const canvas = document.getElementById("c");
-  const hint = document.getElementById("hint");
   const fail = (why) => { if (why) console.warn("DVP: " + why); root.classList.add("no-gl"); };
 
   const gl = canvas.getContext("webgl", { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: "high-performance" });
@@ -400,7 +390,6 @@ void main() {
     drag = { x: e.clientX, y: e.clientY, id: e.pointerId };
     canvas.setPointerCapture(e.pointerId);
     canvas.classList.add("dragging");
-    hint.classList.add("used");
   });
   canvas.addEventListener("pointermove", (e) => {
     if (!drag || e.pointerId !== drag.id) return;
