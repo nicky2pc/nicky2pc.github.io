@@ -57,6 +57,9 @@
 </nav>
 
 <script id="fs" type="x-shader/x-fragment">
+// Two passes share this source: PASS_BG draws the sea and the sky at a reduced
+// resolution into a texture; the final pass draws the letters at the screen's
+// own resolution over that texture.
 #ifdef NO_HIGHP
 precision mediump float;
 #else
@@ -66,6 +69,7 @@ uniform vec2 uRes;
 uniform float uTime;
 uniform vec3 uLet;   // letters: yaw, pitch, scale
 uniform float uDist; // letters: distance ahead of the camera
+uniform sampler2D uBg;
 
 #define SEA_DEPTH 1.0
 vec3 SUN;
@@ -136,7 +140,8 @@ float sdBox2(vec2 p, vec2 b) {
   vec2 d = abs(p) - b;
   return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
 }
-// A box whose right corners are rounded with radius r.
+// A box whose right corners are rounded with radius r. With r no larger than
+// either half side the distance stays continuous across x = 0.
 float sdBoxR(vec2 p, vec2 b, float r) {
   float k = p.x > 0.0 ? r : 0.0;
   vec2 q = abs(p) - b + k;
@@ -147,7 +152,7 @@ float sdSeg(vec2 p, vec2 a, vec2 b) {
   return length(pa - ba * clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0));
 }
 float glyphD(vec2 p) {
-  return max(sdBoxR(p, vec2(0.75, 1.0), 0.86), -sdBoxR(p - vec2(0.05, 0.0), vec2(0.37, 0.58), 0.40));
+  return max(sdBoxR(p, vec2(0.75, 1.0), 0.75), -sdBoxR(p - vec2(0.05, 0.0), vec2(0.37, 0.58), 0.37));
 }
 float glyphV(vec2 p) {
   p.x = abs(p.x);
@@ -168,7 +173,7 @@ float sdLetters(vec3 p) {
 }
 vec3 lettersNormal(vec3 p) {
   const vec2 k = vec2(1.0, -1.0);
-  const float e = 0.0015;
+  const float e = 0.0012;
   return normalize(k.xyy * sdLetters(p + k.xyy * e) + k.yyx * sdLetters(p + k.yyx * e) +
                    k.yxy * sdLetters(p + k.yxy * e) + k.xxx * sdLetters(p + k.xxx * e));
 }
@@ -187,34 +192,40 @@ bool hitLetters(vec3 ro, vec3 rd, int steps, float pix, out float tW, out vec3 n
   float tf = min(min(tmax.x, tmax.y), tmax.z);
   if (tf < tn) return false;
   float t = tn, dmin = 1e9, tBest = tn;
-  for (int i = 0; i < 96; i++) {
+  bool left = false;
+  for (int i = 0; i < 128; i++) {
     if (i >= steps) break;
     vec3 p = o + d * t;
     float dist = sdLetters(p);
     if (dist < dmin) { dmin = dist; tBest = t; }
-    if (dist < 0.0012) break;
+    if (dist < 0.0008) { dmin = 0.0; break; }
     t += dist * 0.95;
-    if (t > tf) break;
+    if (t > tf) { left = true; break; }
   }
-  float fp = max(pix * tBest, 0.004);
-  if (dmin > fp) return false;
-  cover = 1.0 - smoothstep(0.0012, fp, dmin);
+  // A ray that ran out of steps inside the box is creeping along a surface:
+  // a hit. One that left the box covers the pixel by how near it passed.
+  float fp = max(pix * tBest, 0.003);
+  if (left) {
+    if (dmin > fp) return false;
+    cover = 1.0 - smoothstep(0.0, fp, dmin);
+  } else {
+    cover = 1.0;
+  }
   tW = tBest * L_scale;
   nW = L_rot * lettersNormal(o + d * tBest);
-  return true;
+  return cover > 0.0;
 }
 
-// What a reflection that points down sees: the sea, without tracing it.
+// What a reflection that points down sees: the sea, without tracing it. It
+// meets the sky at the horizon, so chrome shows no hard seam there.
 vec3 seaBelow(vec3 r) {
-  float f = 0.03 + 0.55 * pow(1.0 - min(-r.y, 1.0), 12.0);
-  return mix(vec3(0.010, 0.045, 0.06), sky(vec3(r.x, -r.y, r.z)), f);
+  float f = exp(min(r.y, 0.0) * 30.0);
+  return mix(vec3(0.045, 0.095, 0.120), horizon(r), f);
 }
 vec3 chrome(vec3 rd, vec3 n) {
   vec3 r = reflect(rd, n);
   vec3 env = r.y >= 0.0 ? sky(r) : seaBelow(r);
   float ndv = max(dot(n, -rd), 0.0);
-  // At a grazing angle the rim would flicker between sky and sea: show the haze.
-  env = mix(horizon(r) * 0.92, env, smoothstep(0.0, 0.22, ndv));
   vec3 f0 = vec3(0.90, 0.90, 0.92);
   vec3 c = env * (f0 + (1.0 - f0) * pow(1.0 - ndv, 5.0));
   c += vec3(1.0, 0.88, 0.70) * 2.2 * pow(max(dot(r, SUN), 0.0), 80.0);
@@ -255,7 +266,9 @@ vec3 shadeSea(vec3 ro, vec3 rd, float t) {
   float fres = 0.02 + 0.98 * pow(clamp(1.0 - dot(n, -rd), 0.0, 1.0), 5.0);
   vec3 refl = sky(r);
   float tl, cv; vec3 nl;
-  if (hitLetters(p + n * 0.02, r, 40, 0.0, tl, nl, cv)) refl = mix(refl, chrome(r, nl), cv);
+  // The letters in the water, but not in the near swell: there their
+  // reflection breaks into dark blots.
+  if (t > 4.0 && hitLetters(p + n * 0.02, r, 40, 0.0, tl, nl, cv)) refl = mix(refl, chrome(r, nl), cv * smoothstep(4.0, 9.0, t));
   float crest = clamp((p.y + 0.85 * SEA_DEPTH) / (0.85 * SEA_DEPTH), 0.0, 1.0);
   vec3 body = mix(vec3(0.018, 0.068, 0.090), vec3(0.060, 0.225, 0.245), crest * crest);
   body *= 0.6 + 0.4 * max(dot(n, SUN), 0.0);
@@ -268,6 +281,7 @@ vec3 shadeSea(vec3 ro, vec3 rd, float t) {
 
 mat3 rotY(float a) { float c = cos(a), s = sin(a); return mat3(c, 0.0, -s, 0.0, 1.0, 0.0, s, 0.0, c); }
 mat3 rotX(float a) { float c = cos(a), s = sin(a); return mat3(1.0, 0.0, 0.0, 0.0, c, s, 0.0, -s, c); }
+vec3 tonemap(vec3 c) { return pow(1.0 - exp(-c * 1.25), vec3(0.94)); }
 
 void main() {
   SUN = normalize(vec3(-0.50, 0.10, -0.86));
@@ -286,26 +300,25 @@ void main() {
   L_center = ro + vec3(0.0, 0.04 * sin(t * 0.8), -uDist);
   L_rot = rotY(uLet.x + 0.16 * sin(t * 0.31)) * rotX(uLet.y + 0.035 * sin(t * 0.47));
 
-  vec3 col = vec3(0.0);
-  float tl, cover; vec3 nl;
-  bool letters = hitLetters(ro, rd, 96, 2.0 / (uRes.y * 1.9), tl, nl, cover);
-  if (!letters || cover < 1.0) {
-    float ts = traceSea(ro, rd);
-    if (ts > 0.0) {
-      col = shadeSea(ro, rd, ts);
-      col = mix(col, horizon(rd), 1.0 - exp(-ts * 0.0065));
-    } else {
-      col = sky(rd);
-    }
+#ifdef PASS_BG
+  vec3 col;
+  float ts = traceSea(ro, rd);
+  if (ts > 0.0) {
+    col = shadeSea(ro, rd, ts);
+    col = mix(col, horizon(rd), 1.0 - exp(-ts * 0.0065));
+  } else {
+    col = sky(rd);
   }
-  if (letters) col = mix(col, chrome(rd, nl), cover);
-
-  col = 1.0 - exp(-col * 1.25);
-  col = pow(col, vec3(0.94));
+  gl_FragColor = vec4(tonemap(col), 1.0);
+#else
   vec2 q = gl_FragCoord.xy / uRes;
+  vec3 col = texture2D(uBg, q).rgb;
+  float tl, cover; vec3 nl;
+  if (hitLetters(ro, rd, 128, 2.0 / (uRes.y * 1.9), tl, nl, cover)) col = mix(col, tonemap(chrome(rd, nl)), cover);
   col *= 0.62 + 0.38 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.16);
   col += (hash(gl_FragCoord.xy + fract(uTime)) - 0.5) / 255.0;
   gl_FragColor = vec4(col, 1.0);
+#endif
 }
 </script>
 <script>
@@ -319,11 +332,12 @@ void main() {
   if (!gl) return fail("no WebGL");
 
   const hp = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
-  const fsSource = (hp && hp.precision > 0 ? "" : "#define NO_HIGHP\n") + document.getElementById("fs").textContent;
+  const fsBody = (hp && hp.precision > 0 ? "" : "#define NO_HIGHP\n") + document.getElementById("fs").textContent;
   const vsSource = "attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }";
 
-  let prog, loc, buf;
-  function build() {
+  // bg: sea and sky into a texture at a reduced size; fin: letters at full size.
+  let bg, fin, tex, fbo, buf;
+  function program(defines) {
     const sh = (type, src) => {
       const s = gl.createShader(type);
       gl.shaderSource(s, src);
@@ -331,41 +345,49 @@ void main() {
       if (!gl.getShaderParameter(s, gl.COMPILE_STATUS) && !gl.isContextLost()) throw new Error(gl.getShaderInfoLog(s) || "shader");
       return s;
     };
-    prog = gl.createProgram();
-    gl.attachShader(prog, sh(gl.VERTEX_SHADER, vsSource));
-    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fsSource));
-    gl.bindAttribLocation(prog, 0, "a");
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS) && !gl.isContextLost()) throw new Error(gl.getProgramInfoLog(prog) || "link");
-    gl.useProgram(prog);
+    const p = gl.createProgram();
+    gl.attachShader(p, sh(gl.VERTEX_SHADER, vsSource));
+    gl.attachShader(p, sh(gl.FRAGMENT_SHADER, defines + fsBody));
+    gl.bindAttribLocation(p, 0, "a");
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS) && !gl.isContextLost()) throw new Error(gl.getProgramInfoLog(p) || "link");
+    const u = (n) => gl.getUniformLocation(p, n);
+    return { p, res: u("uRes"), time: u("uTime"), let: u("uLet"), dist: u("uDist"), bg: u("uBg") };
+  }
+  function build() {
+    bg = program("#define PASS_BG\n");
+    fin = program("");
     buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-    loc = {
-      res: gl.getUniformLocation(prog, "uRes"),
-      time: gl.getUniformLocation(prog, "uTime"),
-      let: gl.getUniformLocation(prog, "uLet"),
-      dist: gl.getUniformLocation(prog, "uDist"),
-    };
+    tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    fbo = gl.createFramebuffer();
   }
   try { build(); } catch (e) { return fail(e.message); }
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fixed = window.DVP_FIXED_QUALITY === true; // screenshots: no adapting
   const DIST = 9.0, FL = 1.9, WIDTH = 5.4;
-  let quality = 0.7, letScale = 1, cssW = 1, cssH = 1;
+  let bgQuality = 0.7, finScale = 1, letScale = 1, bgW = 1, bgH = 1;
 
   function resize() {
-    cssW = Math.max(1, window.innerWidth);
-    cssH = Math.max(1, window.innerHeight);
+    const cssW = Math.max(1, window.innerWidth), cssH = Math.max(1, window.innerHeight);
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const maxPixels = 1.7e6;
-    let w = cssW * dpr * quality, h = cssH * dpr * quality;
-    const k = Math.min(1, Math.sqrt(maxPixels / (w * h)));
-    canvas.width = Math.max(1, Math.round(w * k));
-    canvas.height = Math.max(1, Math.round(h * k));
-    gl.viewport(0, 0, canvas.width, canvas.height);
+    const fit = (w, h, max) => { const k = Math.min(1, Math.sqrt(max / (w * h))); return [Math.max(1, Math.round(w * k)), Math.max(1, Math.round(h * k))]; };
+    [canvas.width, canvas.height] = fit(cssW * dpr * finScale, cssH * dpr * finScale, 6.5e6);
+    [bgW, bgH] = fit(cssW * dpr * bgQuality, cssH * dpr * bgQuality, 1.7e6);
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, bgW, bgH, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     const aspect = cssW / cssH;
     const share = aspect >= 1.2 ? 0.52 : aspect <= 0.75 ? 0.86 : 0.86 - (aspect - 0.75) / 0.45 * 0.34;
     letScale = share * 2 * aspect * DIST / FL / WIDTH;
@@ -392,25 +414,45 @@ void main() {
   canvas.addEventListener("pointercancel", release);
 
   const T0 = 9.0;
-  function draw(now) {
-    const time = reduce ? 18.0 : T0 + now / 1000;
-    gl.uniform2f(loc.res, canvas.width, canvas.height);
-    gl.uniform1f(loc.time, time);
-    gl.uniform3f(loc.let, yaw, pitch, letScale);
-    gl.uniform1f(loc.dist, DIST);
+  function pass(prog, w, h, time) {
+    gl.viewport(0, 0, w, h);
+    gl.useProgram(prog.p);
+    gl.uniform2f(prog.res, w, h);
+    gl.uniform1f(prog.time, time);
+    gl.uniform3f(prog.let, yaw, pitch, letScale);
+    gl.uniform1f(prog.dist, DIST);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
+  function draw(now) {
+    const time = reduce ? 18.0 : T0 + now / 1000;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    pass(bg, bgW, bgH, time);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.useProgram(fin.p);
+    gl.uniform1i(fin.bg, 0);
+    pass(fin, canvas.width, canvas.height, time);
+  }
 
-  // Keep the frame rate up on slow GPUs by rendering fewer pixels.
+  // Keep the frame rate up on slow GPUs: first the sea gets fewer pixels, the
+  // letters only after it reached its floor.
   let last = 0, acc = 0, frames = 0, running = true;
   function frame(now) {
     if (!running) return;
-    if (last) {
+    if (last && !fixed) {
       acc += now - last; frames++;
       if (frames === 30) {
         const avg = acc / frames;
-        if (avg > 24 && quality > 0.34) { quality = Math.max(0.34, quality * 0.82); resize(); }
-        else if (avg < 13 && quality < 1) { quality = Math.min(1, quality * 1.12); resize(); }
+        if (avg > 24) {
+          if (bgQuality > 0.34) bgQuality = Math.max(0.34, bgQuality * 0.82);
+          else if (finScale > 0.5) finScale = Math.max(0.5, finScale * 0.85);
+          resize();
+        } else if (avg < 13) {
+          if (finScale < 1) finScale = Math.min(1, finScale * 1.12);
+          else if (bgQuality < 1) bgQuality = Math.min(1, bgQuality * 1.12);
+          resize();
+        }
         acc = 0; frames = 0;
       }
     }
@@ -430,6 +472,7 @@ void main() {
   });
 
   window.addEventListener("resize", resize);
+  if (fixed) bgQuality = 1;
   resize();
   if (reduce) draw(performance.now());
   else requestAnimationFrame(frame);
